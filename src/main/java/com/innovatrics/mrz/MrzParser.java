@@ -69,8 +69,16 @@ public class MrzParser {
             str = str.substring(0, str.length() - 1);
         }
         final String[] names = str.split("<<");
-        final String surname = parseString(new MrzRange(range.column, range.column + names[0].length(), range.row));
-        final String givenNames = parseString(new MrzRange(range.column + names[0].length() + 2, range.column + str.length(), range.row));
+        String surname = "";
+        String givenNames = "";
+        if(names.length==1){
+            givenNames = parseString(new MrzRange(range.column, range.column + names[0].length(), range.row));
+            surname = "";
+        }
+        else if(names.length>1){
+            surname = parseString(new MrzRange(range.column, range.column + names[0].length(), range.row));
+            givenNames = parseString(new MrzRange(range.column + names[0].length() + 2, range.column + str.length(), range.row));
+        }
         return new String[]{surname, givenNames};
     }
 
