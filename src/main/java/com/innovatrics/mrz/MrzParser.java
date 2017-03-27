@@ -69,8 +69,17 @@ public class MrzParser {
             str = str.substring(0, str.length() - 1);
         }
         final String[] names = str.split("<<");
-        final String surname = parseString(new MrzRange(range.column, range.column + names[0].length(), range.row));
-        final String givenNames = parseString(new MrzRange(range.column + names[0].length() + 2, range.column + str.length(), range.row));
+        String surname = "";
+        String givenNames = "";
+        surname = parseString(new MrzRange(range.column, range.column + names[0].length(), range.row));
+        if(names.length==1){
+            givenNames = parseString(new MrzRange(range.column, range.column + names[0].length(), range.row));
+            surname = "";
+        }
+        else if(names.length>1){
+            surname = parseString(new MrzRange(range.column, range.column + names[0].length(), range.row));
+            givenNames = parseString(new MrzRange(range.column + names[0].length() + 2, range.column + str.length(), range.row));
+        }
         return new String[]{surname, givenNames};
     }
 
@@ -136,7 +145,7 @@ public class MrzParser {
     public void checkDigit(int col, int row, String str, String fieldName) {
         final char digit = (char) (computeCheckDigit(str) + '0');
         final char checkDigit = rows[row].charAt(col);
-        if (digit != checkDigit || (checkDigit != FILLER && checkDigit != '0' && digit == '0')) {
+        if (digit != checkDigit && (checkDigit != FILLER && checkDigit != '0' && digit == '0') ) {
             throw new MrzParseException("Check digit verification failed for " + fieldName + ": expected " + digit + " but got " + checkDigit, mrz, new MrzRange(col, col + 1, row), format);
         }
     }
